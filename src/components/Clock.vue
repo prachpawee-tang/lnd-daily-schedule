@@ -1,8 +1,37 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const deg = 6
+const hourRotation = ref(0)
+const minRotation = ref(0)
+const secRotation = ref(0)
+let clockInterval = null
+
+const setClock = () => {
+  const day = new Date()
+  hourRotation.value = day.getHours() * 15 + (day.getMinutes() / 60) * 15
+  minRotation.value = day.getMinutes() * deg + (day.getSeconds() / 60) * deg
+  secRotation.value = day.getSeconds() * deg
+}
+
+onMounted(() => {
+  setClock()
+  clockInterval = setInterval(setClock, 1000)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(clockInterval)
+})
+</script>
 
 <template>
   <div class="clock">
-    <div class="clock-inner"></div>
+    <div class="clock-inner">
+      <div class="clock-pivot" />
+      <div class="hour-hand" :style="{ transform: `rotateZ(${hourRotation}deg)` }"></div>
+      <div class="minute-hand" :style="{ transform: `rotateZ(${minRotation}deg)` }"></div>
+      <!-- <div class="second-hand" :style="{ transform: `rotateZ(${secRotation}deg)` }"></div> -->
+    </div>
 
     <div
       class="hour-mark"
@@ -27,6 +56,55 @@
   border: 3px solid #000;
   margin: 3px;
   position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hour-hand,
+.minute-hand,
+.second-hand {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+
+  transition: all 1s linear;
+}
+.hour-hand {
+  height: 30%;
+  aspect-ratio: 1;
+}
+.hour-hand:before {
+  content: '';
+  position: absolute;
+  height: 50%;
+  width: 6px;
+  background-color: #000;
+  border-radius: 6px;
+}
+.minute-hand {
+  height: 60%;
+  aspect-ratio: 1;
+}
+.minute-hand:before {
+  content: '';
+  height: 50%;
+  width: 4px;
+  background-color: #000;
+  border-radius: 4px;
+}
+.second-hand {
+  height: 13em;
+  width: 13em;
+}
+.second-hand:before {
+  content: '';
+  height: 60%;
+  width: 2px;
+  background-color: #f00;
+  border-radius: 2px;
 }
 
 .clock {
@@ -41,6 +119,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.clock-pivot {
+  width: 5%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: #000;
 }
 
 .hour-mark {
