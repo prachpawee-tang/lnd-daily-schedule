@@ -1,10 +1,14 @@
+<!-- todo: task title position -->
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const MOCK_SCHEDULE = [{ start: 22, end: 5, title: 'sleep' }]
 
 const deg = 6
 const hourRotation = ref(0)
 const minRotation = ref(0)
 const secRotation = ref(0)
+const schedule = ref(MOCK_SCHEDULE)
 let clockInterval = null
 
 const setClock = () => {
@@ -44,6 +48,29 @@ onBeforeUnmount(() => {
 
     <div class="clock-numbers" v-for="i in 24" :key="`clock-numbers-${i}`">
       <span :class="`h${i}`">{{ i }}</span>
+    </div>
+
+    <div class="clock-schedule" v-for="task in schedule" :key="task.title">
+      <div
+        class="schedule-start-mark"
+        :style="{
+          transform: `rotate(${task.start * 15}deg) translateY(20px)`,
+        }"
+      ></div>
+      <div
+        class="schedule-title"
+        :style="{ transform: `rotate(${((task.start + task.end) / 2) * 15 - 90}deg)` }"
+      >
+        <span>
+          {{ task.title }}
+        </span>
+      </div>
+      <div
+        class="schedule-end-mark"
+        :style="{
+          transform: `rotate(${task.end * 15}deg) translateY(20px)`,
+        }"
+      ></div>
     </div>
   </div>
 </template>
@@ -137,10 +164,32 @@ onBeforeUnmount(() => {
   left: 50%;
   border-radius: 2px;
 }
-
 .hour-mark:nth-of-type(6n + 1) {
   width: 4px;
   height: 15px;
+}
+
+.schedule-start-mark,
+.schedule-end-mark {
+  position: absolute;
+  width: 1px;
+  height: 40%;
+  background-color: #000;
+  transform-origin: 0% min(35.1vw, 200px);
+  top: 0;
+  left: 50%;
+  border-radius: 2px;
+}
+
+.schedule-title {
+  position: absolute;
+  width: 50%;
+  color: #000;
+  top: calc(50% - 10px);
+  left: 50%;
+  margin-left: 20px;
+  text-align: center;
+  transform-origin: 0% 0%;
 }
 
 .clock-numbers {
