@@ -1,8 +1,18 @@
-<!-- todo: task title position -->
+<!-- fix: task title position -->
+<!-- fix: hand move backward when change back to 0 -->
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
-const MOCK_SCHEDULE = [{ start: 22, end: 5, title: 'sleep' }]
+const MOCK_SCHEDULE = [
+  { start: 22, end: 5, title: 'sleep' },
+  { start: 5, end: 6, title: 'wake up' },
+  { start: 6, end: 8, title: 'breakfast' },
+  { start: 8, end: 12, title: 'work' },
+  { start: 12, end: 17, title: 'lunch' },
+  { start: 17, end: 20, title: 'work' },
+  { start: 20, end: 22, title: 'dinner' },
+]
 
 const deg = 6
 const hourRotation = ref(0)
@@ -32,9 +42,21 @@ onBeforeUnmount(() => {
   <div class="clock">
     <div class="clock-inner">
       <div class="clock-pivot" />
-      <div class="hour-hand" :style="{ transform: `rotateZ(${hourRotation}deg)` }"></div>
-      <div class="minute-hand" :style="{ transform: `rotateZ(${minRotation}deg)` }"></div>
-      <!-- <div class="second-hand" :style="{ transform: `rotateZ(${secRotation}deg)` }"></div> -->
+      <div
+        class="hour-hand"
+        :class="{ 'no-transition': hourRotation === 0 }"
+        :style="{ transform: `rotateZ(${hourRotation}deg)` }"
+      ></div>
+      <div
+        class="minute-hand"
+        :class="{ 'no-transition': minRotation === 0 }"
+        :style="{ transform: `rotateZ(${minRotation}deg)` }"
+      ></div>
+      <!-- <div
+        class="second-hand"
+        :class="{ 'no-transition': secRotation === 0 }"
+        :style="{ transform: `rotateZ(${secRotation}deg)` }"
+      ></div> -->
     </div>
 
     <div
@@ -99,6 +121,11 @@ onBeforeUnmount(() => {
 
   transition: all 1s linear;
 }
+
+.no-transition {
+  transition: ease-in-out 1s linear;
+}
+
 .hour-hand {
   height: 30%;
   aspect-ratio: 1;
